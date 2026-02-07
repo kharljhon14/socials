@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -49,4 +50,40 @@ func (s *PostgresPostsStore) Create(ctx context.Context, post *Post) error {
 	}
 
 	return nil
+}
+
+func (s PostgresPostsStore) GetByID(ctx context.Context, postID uuid.UUID) (*Post, error) {
+	query := `
+		SELECT 
+			id,
+			title,
+			content,
+			userID,
+			tags,
+			created_at,
+			updated_at
+		FROM posts
+		WHERE id = $1
+	`
+
+	var post Post
+	err := s.db.QueryRowContext(ctx, query, postID).Scan(
+		&post.ID,
+		&post.Title,
+		&post.Content,
+		&post.UserID,
+		pq.Array(&post.Tags),
+		&post.CreatedAt,
+		&post.UpdatedAt,
+	)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &post, nil
 }

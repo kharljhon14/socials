@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS "posts"(
     "title" text NOT NULL,
     "user_id" uuid NOT NULL,
     "content" text NOT NULL,
+    "tags" varchar(100) [],
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
