@@ -4,9 +4,17 @@ import (
 	"encoding/json"
 	"maps"
 	"net/http"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type envelope map[string]any
+
+var Validate *validator.Validate
+
+func init() {
+	Validate = validator.New(validator.WithRequiredStructEnabled())
+}
 
 func writeJSON(
 	w http.ResponseWriter,
